@@ -474,7 +474,7 @@ class GroupStatistic(VkontakteModel):
     '''
     Group statistic model collecting information via API
     http://vk.com/developers.php?oid=-1&p=stats.get
-    TODO: inherit from GroupStatisticAbstract and check
+    TODO: refactor model and add parser functionality
     '''
     class Meta:
         verbose_name = _('Vkontakte group API statistic')
