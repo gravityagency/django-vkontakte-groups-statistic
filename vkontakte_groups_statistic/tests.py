@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from datetime import timedelta, date
 
-from django.test import TestCase
 from django.utils import timezone
+from vkontakte_api.tests import VkontakteApiTestCase
 from vkontakte_groups.factories import GroupFactory
 
 from .models import GroupStat, GroupStatistic
@@ -10,7 +10,7 @@ from .models import GroupStat, GroupStatistic
 GROUP_ID = 1
 
 
-class VkontakteGroupsStatisticTest(TestCase):
+class VkontakteGroupsStatisticTest(VkontakteApiTestCase):
 
     def test_fetch_statistic(self):
 
@@ -31,6 +31,9 @@ class VkontakteGroupsStatisticTest(TestCase):
         self.assertGreater(stat.visitors, 0)
         self.assertGreater(stat.males, 0)
         self.assertGreater(stat.females, 0)
+        self.assertGreater(stat.likes, 0)
+        self.assertGreater(stat.section_discussions, 0)
+        self.assertGreater(stat.activity_wall, 0)
         self.assertIsInstance(stat.date, date)
 
         # test date_from argument

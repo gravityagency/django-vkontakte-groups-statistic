@@ -2,6 +2,7 @@
 from datetime import datetime
 import logging
 import re
+import six
 from urllib import unquote
 
 from django.conf import settings
@@ -22,9 +23,9 @@ group_statistic_page_parsed = Signal(providing_args=['instance'])
 
 
 def fetch_statistic_for_group(group, source='parser', **kwargs):
-    '''
+    """
     Get html page with statistic charts and parse it
-    '''
+    """
     if source == 'api':
         GroupStatistic.remote.fetch_for_group(group, **kwargs)
 
@@ -81,8 +82,8 @@ class GroupStatManager(models.Manager):
             ),
             'ads': (
                 (u'Зашедшие с рекламы', 'ads_visitors'),
-                (u'Вступившие с рекламы', 'ads_members'),
                 (u'Зашедшие с акций', 'act_visitors'),
+                (u'Вступившие с рекламы', 'ads_members'),
                 (u'Вступившие с акции', 'act_members'),
             ),
             'members': (
@@ -104,6 +105,7 @@ class GroupStatManager(models.Manager):
                 # VK убрал график после разделения графиков на вкладки cocacola 2012-12-18
 #                    (u'Приложения', 'section_applications'),
                 (u'Документы', 'section_documents'),
+                (u'Товары', 'section_products'),
             ),
             'sources': (
                 (u'Таргетированная реклама', 'sources_ads'),
@@ -148,7 +150,7 @@ class GroupStatManager(models.Manager):
                 (u'Мне нравится', 'likes'),
                 (u'Комментарии', 'comments'),
                 (u'Рассказать друзьям', 'shares'),
-                (u'Упоминания', 'references'),
+                # (u'Упоминания', 'references'),
                 (u'Скрыли из новостей', 'hidings')
             ),
             'activity': (
@@ -159,6 +161,7 @@ class GroupStatManager(models.Manager):
                 (u'Комментарии к видеозаписям', 'activity_video_comments'),
                 (u'Темы обсуждений', 'activity_topics'),
                 (u'Комментарии к обсуждениям', 'activity_topic_comments'),
+                (u'Комментарии к товарам', 'activity_product_comments'),
             ),
         }
     }
@@ -229,7 +232,7 @@ class GroupStatManager(models.Manager):
 
     def _prepare_graph_data(self, graph_data, date_from=None):
         data = {}
-        for key, graph_set in graph_data.iteritems():
+        for key, graph_set in six.iteritems(graph_data):
             section, key = key.split('_')
             for graph in graph_set:
                 if not graph['d']:
@@ -471,11 +474,11 @@ class GroupStatisticRemoteManager(VkontakteManager):
 
 class GroupStatistic(VkontakteModel):
 
-    '''
+    """
     Group statistic model collecting information via API
     http://vk.com/developers.php?oid=-1&p=stats.get
     TODO: refactor model and add parser functionality
-    '''
+    """
     class Meta:
         verbose_name = _('Vkontakte group API statistic')
         verbose_name_plural = _('Vkontakte group API statistics')
@@ -544,9 +547,9 @@ class GroupStatistic(VkontakteModel):
     })
 
     def parse(self, response):
-        '''
+        """
         Transform response for correct parsing it in parent method
-        '''
+        """
         response['date'] = response.get('day')
 
         fields_map = {
@@ -610,6 +613,7 @@ class GroupStatisticAbstract(models.Model):
     section_photoalbums = models.PositiveIntegerField(u'Фотоальбомы', null=True)
     section_applications = models.PositiveIntegerField(u'Приложения', null=True)
     section_documents = models.PositiveIntegerField(u'Документы', null=True)
+    section_products = models.PositiveIntegerField(u'Товары', null=True)
 
     activity_wall = models.PositiveIntegerField(u'Сообщения на стене', null=True)
     activity_photos = models.PositiveIntegerField(u'Фотографии', null=True)
@@ -618,6 +622,7 @@ class GroupStatisticAbstract(models.Model):
     activity_video_comments = models.PositiveIntegerField(u'Комментарии к видеозаписям', null=True)
     activity_topics = models.PositiveIntegerField(u'Темы обсуждений', null=True)
     activity_topic_comments = models.PositiveIntegerField(u'Комментарии к обсуждениям', null=True)
+    activity_product_comments = models.PositiveIntegerField(u'Комментарии к товарам', null=True)
 
     males = models.PositiveIntegerField(u'Мужчины', null=True)
     females = models.PositiveIntegerField(u'Женщины', null=True)
@@ -662,9 +667,9 @@ class GroupStatisticAbstract(models.Model):
 
 class GroupStat(GroupStatisticAbstract):
 
-    '''
+    """
     Group statistic model collecting information via parser
-    '''
+    """
     class Meta:
         verbose_name = _('Vkontakte group statistic')
         verbose_name_plural = _('Vkontakte group statistics')
