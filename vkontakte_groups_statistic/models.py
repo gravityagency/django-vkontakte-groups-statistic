@@ -129,6 +129,8 @@ class GroupStatManager(models.Manager):
             'reach': (
                 (u'Полный охват', 'reach'),
                 (u'Охват подписчиков', 'reach_subsribers'),
+                (u'Виральный охват', 'reach_viral'),
+                (u'Рекламный охват', 'reach_ads'),
             ),
             'gender': (
                 (u'женщины', 'reach_females'),
@@ -596,6 +598,8 @@ class GroupStatisticAbstract(models.Model):
 
     reach = models.PositiveIntegerField(u'Полный охват', null=True)
     reach_subsribers = models.PositiveIntegerField(u'Охват подписчиков', null=True)
+    reach_viral = models.PositiveIntegerField(u'Виральный охват', null=True)
+    reach_ads = models.PositiveIntegerField(u'Рекламный охват', null=True)
 
     widget_users_views = models.PositiveIntegerField(u'Просмотры пользователей ВКонтакте', null=True)
     widget_members_views = models.PositiveIntegerField(u'Просмотры участников группы', null=True)
